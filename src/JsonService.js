@@ -8,8 +8,12 @@ export class JsonService {
     constructor(
         additionalContentTypes = null, 
         XMLHttpRequestCtor = Global.XMLHttpRequest, 
-        jwtHandler = null
+        jwtHandler = null,
+        settings,
     ) {
+
+        this._settings = settings;
+
         if (additionalContentTypes && Array.isArray(additionalContentTypes))
         {
             this._contentTypes = additionalContentTypes.slice();
@@ -39,6 +43,10 @@ export class JsonService {
 
             var req = new this._XMLHttpRequest();
             req.open('GET', url);
+
+            if(this._settings && this._settings.sendRequestsWithCredentials){
+                req.withCredentials = true;
+            }
 
             var allowedContentTypes = this._contentTypes;
             var jwtHandler = this._jwtHandler;
@@ -108,6 +116,10 @@ export class JsonService {
 
             var req = new this._XMLHttpRequest();
             req.open('POST', url);
+
+            if(this._settings && this._settings.sendRequestsWithCredentials){
+                req.withCredentials = true;
+            }
 
             var allowedContentTypes = this._contentTypes;
 

@@ -14,7 +14,7 @@ export class MetadataService {
         }
 
         this._settings = settings;
-        this._jsonService = new JsonServiceCtor(['application/jwk-set+json']);
+        this._jsonService = new JsonServiceCtor(['application/jwk-set+json'], undefined, undefined, this._settings);
     }
 
     get metadataUrl() {

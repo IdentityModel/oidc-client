@@ -32,6 +32,7 @@ export class OidcClientSettings {
         clockService = new ClockService(),
         userInfoJwtIssuer = 'OP',
         mergeClaims = false,
+        sendRequestsWithCredentials = false,
         // other behavior
         stateStore = new WebStorageStateStore(),
         ResponseValidatorCtor = ResponseValidator,
@@ -74,6 +75,8 @@ export class OidcClientSettings {
         this._stateStore = stateStore;
         this._validator = new ResponseValidatorCtor(this);
         this._metadataService = new MetadataServiceCtor(this);
+
+        this._sendRequestsWithCredentials = sendRequestsWithCredentials;
 
         this._extraQueryParams = typeof extraQueryParams === 'object' ? extraQueryParams : {};
         this._extraTokenParams = typeof extraTokenParams === 'object' ? extraTokenParams : {};
@@ -215,6 +218,9 @@ export class OidcClientSettings {
     }
     get metadataService() {
         return this._metadataService;
+    }
+   get sendRequestsWithCredentials() {
+        return this._sendRequestsWithCredentials;
     }
 
     // extra query params

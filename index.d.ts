@@ -164,6 +164,8 @@ export interface OidcClientSettings {
   readonly stateStore?: StateStore;
   readonly userInfoJwtIssuer?: 'ANY' | 'OP' | string;
   readonly mergeClaims?: boolean;
+  /** sets XMLHTTPRequest.withCredentials value for requests */
+  readonly sendRequestsWithCredentials?: boolean;
   ResponseValidatorCtor?: ResponseValidatorCtor;
   MetadataServiceCtor?: MetadataServiceCtor;
   /** An object containing additional query string parameters to be including in the authorization request */
