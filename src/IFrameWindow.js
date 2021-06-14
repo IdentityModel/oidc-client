@@ -19,6 +19,7 @@ export class IFrameWindow {
         this._frame = window.document.createElement("iframe");
 
         // shotgun approach
+        this._frame.style.display = "none";
         this._frame.style.visibility = "hidden";
         this._frame.style.position = "absolute";
         this._frame.width = 0;
