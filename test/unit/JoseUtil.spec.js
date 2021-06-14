@@ -11,6 +11,7 @@ global.atob = (val) => { return Buffer.from(val, 'base64') };
 global.btoa = (val) => { return Buffer.from(val).toString('base64') };
 
 import chai from 'chai';
+
 chai.should();
 let expect = chai.expect;
 
@@ -159,6 +160,7 @@ let expect = chai.expect;
 
                 JoseUtil.validateJwt(jwtFromRsa, rsaKey, expectedIssuer, expectedAudience, 0, notBefore - 1).catch(e => {
                     e.message.should.contain("iat");
+                    e.name.should.equal('TokenClockError');
                     done();
                 });
 
@@ -186,6 +188,7 @@ let expect = chai.expect;
 
                 JoseUtil.validateJwt(jwtFromRsa, rsaKey, expectedIssuer, expectedAudience, 0, issuedAt - 1).catch(e => {
                     e.message.should.contain("iat");
+                    e.name.should.equal('TokenClockError');
                     done();
                 });
 
@@ -204,6 +207,7 @@ let expect = chai.expect;
 
                 JoseUtil.validateJwt(jwtFromRsa, rsaKey, expectedIssuer, expectedAudience, 10, issuedAt - 11).catch(e => {
                     e.message.should.contain("iat");
+                    e.name.should.equal('TokenClockError');
                     done();
                 });
 
@@ -213,6 +217,7 @@ let expect = chai.expect;
 
                 JoseUtil.validateJwt(jwtFromRsa, rsaKey, expectedIssuer, expectedAudience, 0, expires + 1).catch(e => {
                     e.message.should.contain("exp");
+                    e.name.should.equal('TokenExpiredError');
                     done();
                 });
 
@@ -231,6 +236,7 @@ let expect = chai.expect;
 
                 JoseUtil.validateJwt(jwtFromRsa, rsaKey, expectedIssuer, expectedAudience, 10, expires + 11).catch(e => {
                     e.message.should.contain("exp");
+                    e.name.should.equal('TokenExpiredError');
                     done();
                 });
 
@@ -240,6 +246,8 @@ let expect = chai.expect;
 
                 JoseUtil.validateJwt(jwtFromRsa, rsaKey, expectedIssuer, "invalid aud", 0, expectedNow).catch(e => {
                     e.message.should.contain("aud");
+                    e.name.should.equal('TokenAttributeInvalidError');
+                    e.attribute.should.equal('aud');
                     done();
                 });
             });
@@ -248,6 +256,8 @@ let expect = chai.expect;
 
                 JoseUtil.validateJwt(jwtFromRsa, rsaKey, "invalid issuer", expectedAudience, 0, expectedNow).catch(e => {
                     e.message.should.contain("issuer");
+                    e.name.should.equal('TokenAttributeInvalidError');
+                    e.attribute.should.equal('iss');
                     done();
                 });
             });

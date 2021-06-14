@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 import { Log } from './Log.js';
+import { TokenClockError } from './errors/TokenClockError';
+import { TokenExpiredError } from './errors/TokenExpiredError';
+import { TokenAttributeInvalidError } from './errors/TokenAttributeInvalidError';
+import { TokenAttributeMissingError } from './errors/TokenAttributeMissingError';
 
 export default function getJoseUtil({ jws, KeyUtil, X509, crypto, hextob64u, b64tohex, AllowedSigningAlgs }) {
     return class JoseUtil {
@@ -48,7 +52,12 @@ export default function getJoseUtil({ jws, KeyUtil, X509, crypto, hextob64u, b64
                 return JoseUtil._validateJwt(jwt, key, issuer, audience, clockSkew, now, timeInsensitive);
             } catch (e) {
                 Log.error(e && e.message || e);
-                return Promise.reject("JWT validation failed");
+
+                if (e instanceof TokenInvalidError === false) {
+                    e = new TokenInvalidError(e && e.message || e);
+                }
+
+                return Promise.reject(e);
             }
         }
 
@@ -65,25 +74,25 @@ export default function getJoseUtil({ jws, KeyUtil, X509, crypto, hextob64u, b64
 
             if (!payload.iss) {
                 Log.error("JoseUtil._validateJwt: issuer was not provided");
-                return Promise.reject(new Error("issuer was not provided"));
+                return Promise.reject(new TokenAttributeMissingError("issuer", "issuer was not provided"));
             }
             if (payload.iss !== issuer) {
                 Log.error("JoseUtil._validateJwt: Invalid issuer in token", payload.iss);
-                return Promise.reject(new Error("Invalid issuer in token: " + payload.iss));
+                return Promise.reject(new TokenAttributeInvalidError('iss', "Invalid issuer in token: " + payload.iss));
             }
 
             if (!payload.aud) {
                 Log.error("JoseUtil._validateJwt: aud was not provided");
-                return Promise.reject(new Error("aud was not provided"));
+                return Promise.reject(new TokenAttributeMissingError("aud", "aud was not provided"));
             }
             var validAudience = payload.aud === audience || (Array.isArray(payload.aud) && payload.aud.indexOf(audience) >= 0);
             if (!validAudience) {
                 Log.error("JoseUtil._validateJwt: Invalid audience in token", payload.aud);
-                return Promise.reject(new Error("Invalid audience in token: " + payload.aud));
+                return Promise.reject(new TokenAttributeInvalidError('aud', "Invalid audience in token: " + payload.aud));
             }
             if (payload.azp && payload.azp !== audience) {
                 Log.error("JoseUtil._validateJwt: Invalid azp in token", payload.azp);
-                return Promise.reject(new Error("Invalid azp in token: " + payload.azp));
+                return Promise.reject(new TokenAttributeInvalidError('azp', "Invalid azp in token: " + payload.azp));
             }
 
             if (!timeInsensitive) {
@@ -92,25 +101,25 @@ export default function getJoseUtil({ jws, KeyUtil, X509, crypto, hextob64u, b64
 
                 if (!payload.iat) {
                     Log.error("JoseUtil._validateJwt: iat was not provided");
-                    return Promise.reject(new Error("iat was not provided"));
+                    return Promise.reject(new TokenAttributeMissingError('iat', "iat was not provided"));
                 }
                 if (lowerNow < payload.iat) {
                     Log.error("JoseUtil._validateJwt: iat is in the future", payload.iat);
-                    return Promise.reject(new Error("iat is in the future: " + payload.iat));
+                    return Promise.reject(new TokenClockError("iat is in the future: " + payload.iat));
                 }
 
                 if (payload.nbf && lowerNow < payload.nbf) {
                     Log.error("JoseUtil._validateJwt: nbf is in the future", payload.nbf);
-                    return Promise.reject(new Error("nbf is in the future: " + payload.nbf));
+                    return Promise.reject(new TokenClockError("nbf is in the future: " + payload.nbf));
                 }
 
                 if (!payload.exp) {
                     Log.error("JoseUtil._validateJwt: exp was not provided");
-                    return Promise.reject(new Error("exp was not provided"));
+                    return Promise.reject(new TokenAttributeMissingError('exp', "exp was not provided"));
                 }
                 if (payload.exp < upperNow) {
                     Log.error("JoseUtil._validateJwt: exp is in the past", payload.exp);
-                    return Promise.reject(new Error("exp is in the past:" + payload.exp));
+                    return Promise.reject(new TokenExpiredError("exp is in the past:" + payload.exp));
                 }
             }
 
