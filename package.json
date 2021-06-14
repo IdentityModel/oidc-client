@@ -50,7 +50,7 @@
     "gulp-concat": "^2.6.1",
     "gulp-rename": "^1.4.0",
     "jsbn": "^1.1.0",
-    "jsrsasign": "^8.0.24",
+    "jsrsasign": "^10.2.0",
     "mocha": "^5.2.0",
     "natives": "^1.1.6",
     "open": "^6.4.0",
