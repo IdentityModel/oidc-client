@@ -3,6 +3,7 @@
 
 import { Log } from './Log.js';
 import { Global } from './Global.js';
+import { ErrorResponse } from "./ErrorResponse.js";
 
 export class JsonService {
     constructor(
@@ -158,7 +159,7 @@ export class JsonService {
                                 var payload = JSON.parse(req.responseText);
                                 if (payload && payload.error) {
                                     Log.error("JsonService.postForm: Error from server: ", payload.error);
-                                    reject(new Error(payload.error));
+                                    reject(new ErrorResponse(payload));
                                     return;
                                 }
                             }
