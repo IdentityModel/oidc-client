@@ -10,20 +10,12 @@ export class SigninResponse {
 
         var values = UrlUtility.parseUrlFragment(url, delimiter);
 
-        this.error = values.error;
-        this.error_description = values.error_description;
-        this.error_uri = values.error_uri;
-
-        this.code = values.code;
-        this.state = values.state;
-        this.id_token = values.id_token;
-        this.session_state = values.session_state;
-        this.access_token = values.access_token;
-        this.token_type = values.token_type;
-        this.scope = values.scope;
+        for (var key in values) {
+            if (Object.prototype.hasOwnProperty.call(values, key)) {
+                this[key] = values[key];
+            }
+        }
         this.profile = undefined; // will be set from ResponseValidator
-
-        this.expires_in = values.expires_in;
     }
 
     get expires_in() {

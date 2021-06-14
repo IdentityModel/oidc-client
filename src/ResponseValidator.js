@@ -259,8 +259,10 @@ export class ResponseValidator {
         
         return this._tokenClient.exchangeCode(request).then(tokenResponse => {
             
-            for(var key in tokenResponse) {
-                response[key] = tokenResponse[key];
+            for (var key in tokenResponse) {
+                if (Object.prototype.hasOwnProperty.call(tokenResponse, key)) {
+                    response[key] = tokenResponse[key];
+                }
             }
 
             if (response.id_token) {

@@ -408,6 +408,8 @@ export class User {
   expires_at: number;
   /** The custom state transferred in the last signin */
   state: any;
+  /** Other values sent in the token response */
+  otherValues: Record<string, any>;
 
   toStorageString(): string;
   static fromStorageString(storageString: string): User;
